@@ -2759,9 +2759,101 @@ app.get("/admin/exportUsersCsv", isAdminAuth, (req, res) => {
   res.send(csv);
 });
 
+/* ================= SOCIAL VERIFY ================= */
+async function checkPublicProfileExists(url) {
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      redirect: "follow",
+      headers: {
+        "User-Agent": "Mozilla/5.0"
+      }
+    });
+
+    return res.ok;
+  } catch (err) {
+    return false;
+  }
+}
+
+function cleanSocialUsername(platform, value) {
+  let s = String(value || "").trim();
+  if (!s) return "";
+
+  s = s.replace(/^https?:\/\/(www\.)?/i, "");
+  s = s.replace(/^(mobile\.)/i, "");
+
+  if (platform === "twitter") {
+    s = s.replace(/^x\.com\//i, "");
+    s = s.replace(/^twitter\.com\//i, "");
+  }
+
+  if (platform === "instagram") {
+    s = s.replace(/^instagram\.com\//i, "");
+  }
+
+  if (platform === "facebook") {
+    s = s.replace(/^facebook\.com\//i, "");
+    s = s.replace(/^fb\.com\//i, "");
+  }
+
+  s = s.split("?")[0];
+  s = s.split("#")[0];
+  s = s.replace(/^@+/, "");
+  s = s.replace(/^\/+|\/+$/g, "");
+  s = s.trim();
+
+  return s;
+}
+
+app.post("/user/verify-social", isUserAuth, async (req, res) => {
+  try {
+    const platform = String(req.body?.platform || "").trim().toLowerCase();
+    const rawUsername = req.body?.username || "";
+    const username = cleanSocialUsername(platform, rawUsername);
+
+    if (!["twitter", "instagram", "facebook"].includes(platform)) {
+      return res.status(400).json({ success: false, message: "Invalid platform" });
+    }
+
+    if (!username) {
+      return res.status(400).json({ success: false, message: "Username is required" });
+    }
+
+    let url = "";
+
+    if (platform === "twitter") {
+      url = `https://x.com/${username}`;
+    } else if (platform === "instagram") {
+      url = `https://www.instagram.com/${username}/`;
+    } else if (platform === "facebook") {
+      url = `https://www.facebook.com/${username}`;
+    }
+
+    const ok = await checkPublicProfileExists(url);
+
+    if (!ok) {
+      return res.status(404).json({
+        success: false,
+        message: "User not available, check username or profile link"
+      });
+    }
+
+    return res.json({
+      success: true,
+      username
+    });
+  } catch (err) {
+    console.error("verify-social error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Verification failed. Please try again."
+    });
+  }
+});
+
 /* ================= PUBLIC STATIC ASSETS ================= */
 app.use(express.static(path.join(__dirname, "public")));
-
 /* ================= DEFAULT ROUTES ================= */
 app.get("/", (req, res) => res.redirect("/login.html"));
 

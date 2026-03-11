@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "userid": "U177322105085221191",
+    "name": "dhaval",
+    "email": "dhavaljaihind@gmail.com",
+    "mobile": "7359140836",
+    "passwordHash": "$2b$10$cTsRCZKW7ZJFmhZVBnp5iOEV3UzaUW9RVr9YpuPzx2EfP1XOp77Hq",
+    "isBlocked": false,
+    "profileCompleted": false,
+    "profile": null,
+    "createdAt": 1773221050852,
+    "updatedAt": 1773221050852
+  }
+]
