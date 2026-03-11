@@ -1809,75 +1809,7 @@ app.post("/api/verifyTwitter", isUserAuth, (req, res) => {
     message: "Twitter verification not configured on server",
   });
 });
-app.post("/user/verify-social", isUserAuth, async (req, res) => {
-  try {
-    const platform = String(req.body.platform || "").trim().toLowerCase();
-    let username = String(req.body.username || "").trim();
 
-    if (!["twitter", "instagram", "facebook"].includes(platform)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid platform"
-      });
-    }
-
-    if (!username) {
-      return res.status(400).json({
-        success: false,
-        message: "Username required"
-      });
-    }
-
-    username = username
-      .replace(/^https?:\/\/(www\.)?/i, "")
-      .replace(/^(mobile\.)/i, "")
-      .replace(/^x\.com\//i, "")
-      .replace(/^twitter\.com\//i, "")
-      .replace(/^instagram\.com\//i, "")
-      .replace(/^facebook\.com\//i, "")
-      .replace(/^fb\.com\//i, "")
-      .split("?")[0]
-      .split("#")[0]
-      .replace(/^@+/, "")
-      .replace(/^\/+|\/+$/g, "")
-      .trim();
-
-    if (!username) {
-      return res.status(400).json({
-        success: false,
-        message: "Username required"
-      });
-    }
-
-    let valid = false;
-
-    if (platform === "twitter") {
-      valid = /^[A-Za-z0-9_]{1,15}$/.test(username);
-    } else if (platform === "instagram") {
-      valid = /^[A-Za-z0-9._]{1,30}$/.test(username);
-    } else if (platform === "facebook") {
-      valid = /^[A-Za-z0-9.]{3,50}$/.test(username);
-    }
-
-    if (!valid) {
-      return res.status(400).json({
-        success: false,
-        message: "Enter a valid username or profile link"
-      });
-    }
-
-    return res.json({
-      success: true,
-      username: platform === "facebook" ? username : "@" + username
-    });
-  } catch (e) {
-    console.error("verify-social error:", e);
-    return res.status(500).json({
-      success: false,
-      message: "Verification failed. Please try again."
-    });
-  }
-});
 /**
  * Save profile
  * Recommended payload:
@@ -2806,43 +2738,61 @@ function cleanSocialUsername(platform, value) {
 
 app.post("/user/verify-social", isUserAuth, async (req, res) => {
   try {
-    const platform = String(req.body?.platform || "").trim().toLowerCase();
-    const rawUsername = req.body?.username || "";
-    const username = cleanSocialUsername(platform, rawUsername);
+    const platform = String(req.body.platform || "").trim().toLowerCase();
+    let username = String(req.body.username || "").trim();
 
     if (!["twitter", "instagram", "facebook"].includes(platform)) {
-      return res.status(400).json({ success: false, message: "Invalid platform" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid platform"
+      });
     }
 
     if (!username) {
-      return res.status(400).json({ success: false, message: "Username is required" });
+      return res.status(400).json({
+        success: false,
+        message: "Username required"
+      });
     }
 
-    let url = "";
+    username = username
+      .replace(/^https?:\/\/(www\.)?/i, "")
+      .replace(/^(mobile\.)/i, "")
+      .replace(/^x\.com\//i, "")
+      .replace(/^twitter\.com\//i, "")
+      .replace(/^instagram\.com\//i, "")
+      .replace(/^facebook\.com\//i, "")
+      .replace(/^fb\.com\//i, "")
+      .split("?")[0]
+      .split("#")[0]
+      .replace(/^@+/, "")
+      .replace(/^\/+|\/+$/g, "")
+      .trim();
+
+    let valid = false;
 
     if (platform === "twitter") {
-      url = `https://x.com/${username}`;
+      valid = /^[A-Za-z0-9_]{1,15}$/.test(username);
     } else if (platform === "instagram") {
-      url = `https://www.instagram.com/${username}/`;
+      valid = /^[A-Za-z0-9._]{1,30}$/.test(username);
     } else if (platform === "facebook") {
-      url = `https://www.facebook.com/${username}`;
+      valid = /^[A-Za-z0-9.]{3,50}$/.test(username);
     }
 
-    const ok = await checkPublicProfileExists(url);
-
-    if (!ok) {
-      return res.status(404).json({
+    if (!valid) {
+      return res.status(400).json({
         success: false,
-        message: "User not available, check username or profile link"
+        message: "Enter a valid username or profile link"
       });
     }
 
     return res.json({
       success: true,
-      username
+      username: platform === "facebook" ? username : "@" + username
     });
-  } catch (err) {
-    console.error("verify-social error:", err);
+
+  } catch (e) {
+    console.error("verify-social error:", e);
     return res.status(500).json({
       success: false,
       message: "Verification failed. Please try again."
