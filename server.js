@@ -2853,6 +2853,54 @@ app.post("/user/verify-social", isUserAuth, async (req, res) => {
 });
 
 /* ================= PUBLIC STATIC ASSETS ================= */
+app.post("/user/verify-social", async (req, res) => {
+  try {
+    const { platform, username } = req.body;
+
+    if (!platform || !username) {
+      return res.status(400).json({
+        success: false,
+        message: "Platform and username required"
+      });
+    }
+
+    const clean = username.replace(/^@/, "").trim();
+
+    let url = "";
+
+    if (platform === "twitter") {
+      url = `https://x.com/${clean}`;
+    }
+
+    if (platform === "instagram") {
+      url = `https://www.instagram.com/${clean}/`;
+    }
+
+    if (platform === "facebook") {
+      url = `https://www.facebook.com/${clean}`;
+    }
+
+    const r = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0" }
+    });
+
+    if (r.status === 200) {
+      return res.json({ success: true });
+    }
+
+    return res.json({
+      success: false,
+      message: "User not available, check username"
+    });
+
+  } catch (err) {
+    console.error("verify-social error", err);
+    res.status(500).json({
+      success: false,
+      message: "Verification failed"
+    });
+  }
+});
 app.use(express.static(path.join(__dirname, "public")));
 /* ================= DEFAULT ROUTES ================= */
 app.get("/", (req, res) => res.redirect("/login.html"));
