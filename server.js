@@ -1814,69 +1814,67 @@ app.post("/user/verify-social", isUserAuth, async (req, res) => {
     const platform = String(req.body.platform || "").trim().toLowerCase();
     let username = String(req.body.username || "").trim();
 
-    if (!username) {
-      return res.status(400).json({ success: false, message: "Username required" });
+    if (!["twitter", "instagram", "facebook"].includes(platform)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid platform"
+      });
     }
 
-    if (!username.startsWith("@")) username = "@" + username;
+    if (!username) {
+      return res.status(400).json({
+        success: false,
+        message: "Username required"
+      });
+    }
 
-    const clean = username.slice(1);
+    username = username
+      .replace(/^https?:\/\/(www\.)?/i, "")
+      .replace(/^(mobile\.)/i, "")
+      .replace(/^x\.com\//i, "")
+      .replace(/^twitter\.com\//i, "")
+      .replace(/^instagram\.com\//i, "")
+      .replace(/^facebook\.com\//i, "")
+      .replace(/^fb\.com\//i, "")
+      .split("?")[0]
+      .split("#")[0]
+      .replace(/^@+/, "")
+      .replace(/^\/+|\/+$/g, "")
+      .trim();
+
+    if (!username) {
+      return res.status(400).json({
+        success: false,
+        message: "Username required"
+      });
+    }
 
     let valid = false;
-    let url = "";
 
     if (platform === "twitter") {
-      valid = /^[A-Za-z0-9_]{1,15}$/.test(clean);
-      url = `https://x.com/${clean}`;
+      valid = /^[A-Za-z0-9_]{1,15}$/.test(username);
     } else if (platform === "instagram") {
-      valid = /^[A-Za-z0-9._]{1,30}$/.test(clean);
-      url = `https://www.instagram.com/${clean}/`;
+      valid = /^[A-Za-z0-9._]{1,30}$/.test(username);
     } else if (platform === "facebook") {
-      valid = /^[A-Za-z0-9.]{3,50}$/.test(clean);
-      url = `https://www.facebook.com/${clean}`;
-    } else {
-      return res.status(400).json({ success: false, message: "Invalid platform" });
+      valid = /^[A-Za-z0-9.]{3,50}$/.test(username);
     }
 
     if (!valid) {
-      return res.status(400).json({ success: false, message: "User not available, check your username" });
-    }
-
-    const r = await fetch(url, {
-      method: "GET",
-      redirect: "follow",
-      headers: {
-        "User-Agent": "Mozilla/5.0"
-      }
-    });
-
-    const html = await r.text();
-    const low = String(html || "").toLowerCase();
-
-    const looksMissing =
-      !r.ok ||
-      low.includes("not found") ||
-      low.includes("page isn't available") ||
-      low.includes("this account doesn't exist") ||
-      low.includes("sorry, this page isn't available") ||
-      low.includes("content isn't available right now");
-
-    if (looksMissing) {
-      return res.status(404).json({
+      return res.status(400).json({
         success: false,
-        message: "User not available, check your username"
+        message: "Enter a valid username or profile link"
       });
     }
 
     return res.json({
       success: true,
-      username
+      username: platform === "facebook" ? username : "@" + username
     });
   } catch (e) {
-    console.error(e);
+    console.error("verify-social error:", e);
     return res.status(500).json({
       success: false,
-      message: "User not available, check your username"
+      message: "Verification failed. Please try again."
     });
   }
 });
@@ -1959,8 +1957,8 @@ if (instagram) {
 }
 
 if (facebook) {
-  if (!facebook.startsWith("@")) facebook = "@" + facebook;
-  if (!/^@[A-Za-z0-9.]{3,50}$/.test(facebook)) {
+  facebook = String(facebook || "").trim().replace(/^@+/, "");
+  if (!/^[A-Za-z0-9.]{3,50}$/.test(facebook)) {
     return res.status(400).json({ success: false, message: "Invalid Facebook username format" });
   }
   if (!facebookVerified) {

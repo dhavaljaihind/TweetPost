@@ -204,27 +204,14 @@ async function verifyPlatform(platform) {
       return;
     }
 
-    if (res.status === 404) {
+    if (res.ok && data.success) {
+      if (input) input.value = data.username || getPlatformUsername(platform, input?.value || "");
+      setVerifiedUi(platform, true);
+      showToast(`${platform} verified successfully`, "success", 2500);
+    } else {
       setVerifiedUi(platform, false);
-      showToast("Social verification service is not configured on server.", "error", 4000);
-      return;
+      showToast(data.message || "Verification failed", "error", 3500);
     }
-
-if (res.ok && data.success) {
-
-  if (input) input.value = getPlatformUsername(platform, input?.value || "");
-
-  setVerifiedUi(platform, true);
-
-  showToast(`${platform} verified successfully`, "success", 2500);
-
-} else {
-
-  setVerifiedUi(platform, false);
-
-  showToast(data.message || "User not available, check username or profile link", "error", 3500);
-
-}
   } catch (err) {
     console.error(err);
     setVerifiedUi(platform, false);
