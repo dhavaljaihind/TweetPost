@@ -1,5 +1,30 @@
 const TWITTER_LIMIT = 280;
 
+function openTweetComposer(text) {
+    const encodedText = encodeURIComponent(text || "");
+
+    const appUrl = `twitter://post?message=${encodedText}`;
+    const webUrl = `https://twitter.com/intent/tweet?text=${encodedText}`;
+
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+
+    if (!isMobile) {
+        window.open(webUrl, "_blank");
+        return;
+    }
+
+    const start = Date.now();
+
+    window.location.href = appUrl;
+
+    setTimeout(() => {
+        const elapsed = Date.now() - start;
+        if (elapsed < 1700) {
+            window.location.href = webUrl;
+        }
+    }, 1200);
+}
+
 async function loadData() {
     const trendRes = await fetch("/trendSettings", { credentials: "include" });
     const trendData = await trendRes.json().catch(() => ({}));
@@ -150,11 +175,7 @@ async function loadData() {
                 console.log("Analytics failed");
             }
 
-            const url =
-                "https://twitter.com/intent/tweet?text=" +
-                encodeURIComponent(finalText);
-
-            window.open(url, "_blank");
+            openTweetComposer(finalText);
 
             isPosted = true;
             btn.classList.add("tweeted");
