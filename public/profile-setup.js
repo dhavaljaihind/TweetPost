@@ -110,14 +110,13 @@ function normalizeUsername(v) {
   return s;
 }
 
-function getDisplayUsername(platform, username) {
-  const clean = normalizeUsername(username);
+function getPlatformUsername(platform, value) {
+  const clean = normalizeUsername(value);
   if (!clean) return "";
 
   if (platform === "facebook") return clean;
   return "@" + clean;
 }
-
 function setVerifiedUi(platform, ok) {
   const boxMap = {
     twitter: twitterVerifiedBox,
@@ -175,10 +174,10 @@ function getPlatformButton(platform) {
 async function verifyPlatform(platform) {
   const input = getPlatformInput(platform);
   const btn = getPlatformButton(platform);
-  const username = normalizeUsername(input?.value || "");
+  const username = getPlatformUsername(platform, input?.value || "");
 
   if (!username) {
-    showToast(`Enter ${platform} username first`, 3000);
+    showToast(`Enter ${platform} username first`, "warning", 3000);
     return;
   }
 
@@ -198,21 +197,34 @@ async function verifyPlatform(platform) {
     const data = await res.json().catch(() => ({}));
 
     if (res.status === 401) {
-      showToast("Session expired. Please login again.", 2500);
+      showToast("Session expired. Please login again.", "error", 2500);
       setTimeout(() => {
         window.location.href = "/login.html";
       }, 800);
       return;
     }
 
-    if (res.ok && data.success) {
-      if (input) input.value = getDisplayUsername(platform, username);
-      setVerifiedUi(platform, true);
-      showToast(`${platform} verified successfully`, "success", 2500);
-    } else {
+    if (res.status === 404) {
       setVerifiedUi(platform, false);
-      showToast(data.message || "User not available, check your username", "error", 3500);
+      showToast("Social verification service is not configured on server.", "error", 4000);
+      return;
     }
+
+if (res.ok && data.success) {
+
+  if (input) input.value = getPlatformUsername(platform, input?.value || "");
+
+  setVerifiedUi(platform, true);
+
+  showToast(`${platform} verified successfully`, "success", 2500);
+
+} else {
+
+  setVerifiedUi(platform, false);
+
+  showToast(data.message || "User not available, check username or profile link", "error", 3500);
+
+}
   } catch (err) {
     console.error(err);
     setVerifiedUi(platform, false);
@@ -407,9 +419,9 @@ submitBtn?.addEventListener("click", async () => {
     boothNo: (boothNoEl?.value || "").trim(),
     primaryMemberNo: (primaryMemberNoEl?.value || "").trim(),
     sakriyaSabhyaNo: (sakriyaSabhyaNoEl?.value || "").trim(),
-twitter: getDisplayUsername("twitter", twitterInput?.value || ""),
-instagram: getDisplayUsername("instagram", instagramInput?.value || ""),
-facebook: getDisplayUsername("facebook", facebookInput?.value || ""),
+twitter: getPlatformUsername("twitter", twitterInput?.value || ""),
+instagram: getPlatformUsername("instagram", instagramInput?.value || ""),
+facebook: getPlatformUsername("facebook", facebookInput?.value || ""),
     twitterVerified: !!socialVerified.twitter,
     instagramVerified: !!socialVerified.instagram,
     facebookVerified: !!socialVerified.facebook
