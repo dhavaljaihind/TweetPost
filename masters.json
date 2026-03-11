@@ -1,0 +1,447 @@
+{
+  "countries": [
+    {
+      "id": "C_1772870456284_25303",
+      "name": "INDIA"
+    }
+  ],
+  "states": [
+    {
+      "id": "S_1772870464092_68363",
+      "name": "GUJARAT",
+      "countryId": "C_1772870456284_25303"
+    }
+  ],
+  "cities": [
+    {
+      "id": "C_1772870471966_46763",
+      "name": "SURAT",
+      "stateId": "S_1772870464092_68363"
+    },
+    {
+      "id": "C_1772870477248_13756",
+      "name": "NAVSARI",
+      "stateId": "S_1772870464092_68363"
+    },
+    {
+      "id": "C_1772870482763_79107",
+      "name": "AHMEDABAD",
+      "stateId": "S_1772870464092_68363"
+    },
+    {
+      "id": "C_1772870489503_9304",
+      "name": "GANDHINAGAR",
+      "stateId": "S_1772870464092_68363"
+    }
+  ],
+  "loksabhas": [
+    {
+      "id": "L_1772870519208_11304",
+      "name": "24 - SURAT",
+      "stateId": "S_1772870464092_68363"
+    },
+    {
+      "id": "L_1772870524537_56781",
+      "name": "25 - NAVSARI",
+      "stateId": "S_1772870464092_68363"
+    },
+    {
+      "id": "L_1772870532119_36417",
+      "name": "7 - AHMEDABAD EAST",
+      "stateId": "S_1772870464092_68363"
+    },
+    {
+      "id": "L_1772870540589_78905",
+      "name": "6 - GANDHINAGAR",
+      "stateId": "S_1772870464092_68363"
+    },
+    {
+      "id": "L_1772870545625_94582",
+      "name": "10 - RAJKOT",
+      "stateId": "S_1772870464092_68363"
+    },
+    {
+      "id": "L_1772870797409_4062",
+      "name": "23 - BARDOLI",
+      "stateId": "S_1772870464092_68363"
+    }
+  ],
+  "vidhansabhas": [
+    {
+      "id": "V_1772870699890_25022",
+      "name": "155-OLPAD",
+      "lokId": "L_1772870519208_11304"
+    },
+    {
+      "id": "V_1772870834216_45386",
+      "name": "158-KAMREJ",
+      "lokId": "L_1772870797409_4062"
+    },
+    {
+      "id": "V_1772870857196_38289",
+      "name": "159-SURAT EAST",
+      "lokId": "L_1772870519208_11304"
+    },
+    {
+      "id": "V_1772870869953_2942",
+      "name": "160-SURAT NORTH",
+      "lokId": "L_1772870519208_11304"
+    },
+    {
+      "id": "V_1772870885500_95635",
+      "name": "161-VARACHHA",
+      "lokId": "L_1772870519208_11304"
+    },
+    {
+      "id": "V_1772870900711_53152",
+      "name": "162-KARANJ",
+      "lokId": "L_1772870519208_11304"
+    },
+    {
+      "id": "V_1772870915660_2067",
+      "name": "163-LIMBAYAT",
+      "lokId": "L_1772870524537_56781"
+    },
+    {
+      "id": "V_1772870931258_931",
+      "name": "164-UDHANA",
+      "lokId": "L_1772870524537_56781"
+    },
+    {
+      "id": "V_1772870943138_94544",
+      "name": "165-MAJURA",
+      "lokId": "L_1772870524537_56781"
+    },
+    {
+      "id": "V_1772870984481_84952",
+      "name": "166-KATARGAM",
+      "lokId": "L_1772870519208_11304"
+    },
+    {
+      "id": "V_1772871002383_98016",
+      "name": "167-SURAT WEST",
+      "lokId": "L_1772870519208_11304"
+    },
+    {
+      "id": "V_1772871018216_98028",
+      "name": "168-CHORYASI",
+      "lokId": "L_1772870524537_56781"
+    },
+    {
+      "id": "V_1772871035458_26910",
+      "name": "169-BARDOLI",
+      "lokId": "L_1772870797409_4062"
+    }
+  ],
+  "wards": [
+    {
+      "id": "W_1772877513242_40020",
+      "name": "1 JAHANGIRPURA-VARIYAV-CHHAPRABHATHA-KOSAD",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870699890_25022"
+    },
+    {
+      "id": "W_1772877540101_43602",
+      "name": "2 AMROLI-MOTA VACHHA-KATHOR",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870699890_25022"
+    },
+    {
+      "id": "W_1772877569677_68391",
+      "name": "3 VARACHHA-SARTHANA-SIMADA-LASKANA",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870885500_95635"
+    },
+    {
+      "id": "W_1772877586564_1502",
+      "name": "4 KAPODRA",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870885500_95635"
+    },
+    {
+      "id": "W_1772877614966_43734",
+      "name": "5 FULPADA-ASHWINIKUMAR",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870869953_2942"
+    },
+    {
+      "id": "W_1772877633169_25887",
+      "name": "6 KATARGAM",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870984481_84952"
+    },
+    {
+      "id": "W_1772877686889_84685",
+      "name": "7 KATARGAM-VED",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870984481_84952"
+    },
+    {
+      "id": "W_1772877703063_49441",
+      "name": "8 DABHOLI-SINGHANPOR",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870984481_84952"
+    },
+    {
+      "id": "W_1772877730761_16582",
+      "name": "9 RANDER-JAHANGIRPURA-PALANPUR",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772871002383_98016"
+    },
+    {
+      "id": "W_1772877765536_77122",
+      "name": "10 ADAJAN-PAL-ICHHAPOR",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772871002383_98016"
+    },
+    {
+      "id": "W_1772877774519_2391",
+      "name": "10 ADAJAN-PAL-ICHHAPOR",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772871018216_98028"
+    },
+    {
+      "id": "W_1772877800939_11702",
+      "name": "11 ADAJAN-GORAT",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772871002383_98016"
+    },
+    {
+      "id": "W_1772877844682_58427",
+      "name": "12 NANAVAT-SAIYADPURA-KUBERNAGAR-MAHIDHARPURA",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870869953_2942"
+    },
+    {
+      "id": "W_1772877889816_19194",
+      "name": "12 NANAVAT-SAIYADPURA-KUBERNAGAR-MAHIDHARPURA",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870857196_38289"
+    },
+    {
+      "id": "W_1772877939659_34287",
+      "name": "13 VADIFALIYA-NAVAPURA-BEGAMPURA-SALABATPURA",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870857196_38289"
+    },
+    {
+      "id": "W_1772878046423_87625",
+      "name": "14 UMARWADA-MATAWADI",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870900711_53152"
+    },
+    {
+      "id": "W_1772878075202_22451",
+      "name": "15 KARANJ-MAGOB",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870900711_53152"
+    },
+    {
+      "id": "W_1772878140552_72422",
+      "name": "16 PUNA (WEST)",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870834216_45386"
+    },
+    {
+      "id": "W_1772878161075_10622",
+      "name": "17 PUNA (EAST)",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870834216_45386"
+    },
+    {
+      "id": "W_1772878186402_47014",
+      "name": "18 LIMBAYAT-PARVAT-KUMBHARIYA",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870915660_2067"
+    },
+    {
+      "id": "W_1772878208948_5873",
+      "name": "18 LIMBAYAT-PARVAT-KUMBHARIYA",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870834216_45386"
+    },
+    {
+      "id": "W_1772878225080_46034",
+      "name": "19 AANJANA-DUMBHAL",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870915660_2067"
+    },
+    {
+      "id": "W_1772878261029_52249",
+      "name": "20 KHATODRA-MAJURA-SAGRAMPURA",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870943138_94544"
+    },
+    {
+      "id": "W_1772878272576_94504",
+      "name": "20 KHATODRA-MAJURA-SAGRAMPURA",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870857196_38289"
+    },
+    {
+      "id": "W_1772878322178_16942",
+      "name": "21 SONIFALIYA-NANPURA-ATHWA-PIPLOD",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870943138_94544"
+    },
+    {
+      "id": "W_1772878337580_82105",
+      "name": "22 BHATAR-VESU-DUMMAS",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870943138_94544"
+    },
+    {
+      "id": "W_1772878365418_99146",
+      "name": "22 BHATAR-VESU-DUMMAS",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772871018216_98028"
+    },
+    {
+      "id": "W_1772878410406_16916",
+      "name": "23 BAMROLI-UDHANA",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870943138_94544"
+    },
+    {
+      "id": "W_1772878438768_28343",
+      "name": "24 UDHANA (SOUTH)",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870931258_931"
+    },
+    {
+      "id": "W_1772878476841_53774",
+      "name": "25 LIMBAYAT-UDHANA YARD",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870915660_2067"
+    },
+    {
+      "id": "W_1772878528341_37689",
+      "name": "26 GODADARA-DINDOLI (NORTH)",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772871018216_98028"
+    },
+    {
+      "id": "W_1772878541164_43195",
+      "name": "27 DINDOLI (SOUTH)",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772871018216_98028"
+    },
+    {
+      "id": "W_1772878557348_31890",
+      "name": "27 DINDOLI (SOUTH)",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870915660_2067"
+    },
+    {
+      "id": "W_1772878582469_2022",
+      "name": "28 PANDESARA-BHESTAN",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870931258_931"
+    },
+    {
+      "id": "W_1772878603887_27954",
+      "name": "29 ALTHAN-BAMROLI-VADOD",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772870943138_94544"
+    },
+    {
+      "id": "W_1772878634212_34421",
+      "name": "30 KANSAD-SACHIN-UN-AABHVA",
+      "cityId": "C_1772870471966_46763",
+      "vidhansabhaId": "V_1772871018216_98028"
+    }
+  ],
+  "designations": [
+    {
+      "id": "D_1772877107246_54148",
+      "name": "CITY PRESIDENT"
+    },
+    {
+      "id": "D_1772877118175_94321",
+      "name": "CITY MAHAMANTRI"
+    },
+    {
+      "id": "D_1772877132695_3537",
+      "name": "CITY VICE PRESIDENT"
+    },
+    {
+      "id": "D_1772877140093_39732",
+      "name": "CITY MANTRI"
+    },
+    {
+      "id": "D_1772877157390_93344",
+      "name": "CITY YOUTH PRESIDENT"
+    },
+    {
+      "id": "D_1772877169418_35107",
+      "name": "CITY YOUTH MAHAMANTRI"
+    },
+    {
+      "id": "D_1772877182008_28997",
+      "name": "CITY YOUTH VICE PRESIDENT"
+    },
+    {
+      "id": "D_1772877193378_95728",
+      "name": "CITY IT INCHARGE"
+    },
+    {
+      "id": "D_1772877202987_68757",
+      "name": "CITY SM INCHARGE"
+    },
+    {
+      "id": "D_1772877214223_9630",
+      "name": "WARD PRESIDENT"
+    },
+    {
+      "id": "D_1772877220844_25586",
+      "name": "WARD MAHAMANTRI"
+    },
+    {
+      "id": "D_1772877231089_99621",
+      "name": "WARD VICE PRESIDENT"
+    },
+    {
+      "id": "D_1772877258701_946",
+      "name": "SURAT PRABHARI (MAIN BODY)"
+    },
+    {
+      "id": "D_1772877274007_20772",
+      "name": "SURAT PRABHARI (YOUTH WING)"
+    },
+    {
+      "id": "D_1772877287034_45937",
+      "name": "WARD PRABHARI"
+    },
+    {
+      "id": "D_1772877294901_15333",
+      "name": "VIDHANSABHA PRABHARI"
+    },
+    {
+      "id": "D_1772877305753_23323",
+      "name": "CITY IT CO-INCHARGE"
+    },
+    {
+      "id": "D_1772877315552_43512",
+      "name": "CITY SM CO-INCHARGE"
+    },
+    {
+      "id": "D_1772877333567_19741",
+      "name": "CORPORATER"
+    },
+    {
+      "id": "D_1772877336691_52932",
+      "name": "MP"
+    },
+    {
+      "id": "D_1772877340912_428",
+      "name": "MLA"
+    }
+  ],
+  "country": [],
+  "city": [],
+  "vidhansabha": [],
+  "ward": [],
+  "shaktikendra": [],
+  "booth": [],
+  "designation": []
+}
