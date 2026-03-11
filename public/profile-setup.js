@@ -92,8 +92,30 @@ function enableSelect(sel) {
 function normalizeUsername(v) {
   let s = String(v || "").trim();
   if (!s) return "";
-  if (!s.startsWith("@")) s = "@" + s;
+
+  s = s.replace(/^https?:\/\/(www\.)?/i, "");
+  s = s.replace(/^(mobile\.)/i, "");
+  s = s.replace(/^x\.com\//i, "");
+  s = s.replace(/^twitter\.com\//i, "");
+  s = s.replace(/^instagram\.com\//i, "");
+  s = s.replace(/^facebook\.com\//i, "");
+  s = s.replace(/^fb\.com\//i, "");
+
+  s = s.split("?")[0];
+  s = s.split("#")[0];
+  s = s.replace(/^@+/, "");
+  s = s.replace(/^\/+|\/+$/g, "");
+  s = s.trim();
+
   return s;
+}
+
+function getDisplayUsername(platform, username) {
+  const clean = normalizeUsername(username);
+  if (!clean) return "";
+
+  if (platform === "facebook") return clean;
+  return "@" + clean;
 }
 
 function setVerifiedUi(platform, ok) {
@@ -184,17 +206,17 @@ async function verifyPlatform(platform) {
     }
 
     if (res.ok && data.success) {
-      if (input) input.value = username;
+      if (input) input.value = getDisplayUsername(platform, username);
       setVerifiedUi(platform, true);
-      showToast(`${platform} verified successfully`, 2500);
+      showToast(`${platform} verified successfully`, "success", 2500);
     } else {
       setVerifiedUi(platform, false);
-      showToast(data.message || "User not available, check your username", 3500);
+      showToast(data.message || "User not available, check your username", "error", 3500);
     }
   } catch (err) {
     console.error(err);
     setVerifiedUi(platform, false);
-    showToast("Verification failed. Please try again.", 3500);
+    showToast("Verification failed. Please try again.", "error", 3500);
   } finally {
     if (btn) {
       btn.disabled = false;
@@ -385,9 +407,9 @@ submitBtn?.addEventListener("click", async () => {
     boothNo: (boothNoEl?.value || "").trim(),
     primaryMemberNo: (primaryMemberNoEl?.value || "").trim(),
     sakriyaSabhyaNo: (sakriyaSabhyaNoEl?.value || "").trim(),
-    twitter: normalizeUsername(twitterInput?.value || ""),
-    instagram: normalizeUsername(instagramInput?.value || ""),
-    facebook: normalizeUsername(facebookInput?.value || ""),
+twitter: getDisplayUsername("twitter", twitterInput?.value || ""),
+instagram: getDisplayUsername("instagram", instagramInput?.value || ""),
+facebook: getDisplayUsername("facebook", facebookInput?.value || ""),
     twitterVerified: !!socialVerified.twitter,
     instagramVerified: !!socialVerified.instagram,
     facebookVerified: !!socialVerified.facebook
