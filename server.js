@@ -612,137 +612,359 @@ app.post("/admin/addMaster", isAdminAuth, isSuperAdmin, (req, res) => {
 
 const uploadCsv = multer({ dest: "uploads/" });
 
-/* ================= EXPORT MASTERS CSV ================= */
+function emptyMastersStructure() {
+  return {
+    countries: [],
+    states: [],
+    cities: [],
+    loksabhas: [],
+    vidhansabhas: [],
+    wards: [],
+    designations: [],
 
-app.get("/admin/exportMastersCsv", isAdminAuth, isSuperAdmin, (req, res) => {
+    // legacy keys so old pages do not break
+    country: [],
+    city: [],
+    vidhansabha: [],
+    ward: [],
+    shaktikendra: [],
+    booth: [],
+    designation: []
+  };
+}
 
-  try {
+function sheetRowsCountries(masters) {
+  return (masters.countries || []).map((x) => ({
+    id: x.id || "",
+    name: x.name || ""
+  }));
+}
 
-    const masters = mastersSafe(readJson("masters.json"));
-
-    const rows = [];
-
-    Object.keys(masters).forEach(level => {
-      (masters[level] || []).forEach(item => {
-
-        rows.push([
-          level,
-          item.id || "",
-          item.name || "",
-          item.countryId || "",
-          item.stateId || "",
-          item.cityId || "",
-          item.lokId || "",
-          item.vidhansabhaId || ""
-        ].join(","));
-
-      });
-    });
-
-    const header = "level,id,name,countryId,stateId,cityId,lokId,vidhansabhaId";
-
-    const csv = [header, ...rows].join("\n");
-
-    res.setHeader("Content-Type", "text/csv");
-    res.setHeader("Content-Disposition", "attachment; filename=masters.csv");
-
-    res.send(csv);
-
-  } catch (e) {
-
-    console.error(e);
-    res.status(500).send("Failed to export masters");
-
-  }
-
-});
-
-
-/* ================= IMPORT MASTERS CSV ================= */
-
-app.post("/admin/importMastersCsv", isAdminAuth, isSuperAdmin, uploadCsv.single("file"), (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: "CSV file required" });
-    }
-
-    const ext = path.extname(req.file.originalname || "").toLowerCase();
-    if (ext !== ".csv") {
-      try { fs.unlinkSync(req.file.path); } catch {}
-      return res.status(400).json({ success: false, message: "Only CSV file is allowed" });
-    }
-
-    const content = fs.readFileSync(req.file.path, "utf8");
-    const lines = content
-      .split(/\r?\n/)
-      .map(x => x.trim())
-      .filter(Boolean);
-
-    if (lines.length <= 1) {
-      try { fs.unlinkSync(req.file.path); } catch {}
-      return res.status(400).json({ success: false, message: "CSV file is empty" });
-    }
-
-    lines.shift(); // remove header
-
-    const masters = {
-      countries: [],
-      states: [],
-      cities: [],
-      loksabhas: [],
-      vidhansabhas: [],
-      wards: [],
-      designations: [],
-
-      // keep legacy keys so old pages don't break
-      country: [],
-      city: [],
-      vidhansabha: [],
-      ward: [],
-      shaktikendra: [],
-      booth: [],
-      designation: []
+function sheetRowsStates(masters) {
+  return (masters.states || []).map((x) => {
+    const country = (masters.countries || []).find((c) => String(c.id) === String(x.countryId));
+    return {
+      id: x.id || "",
+      name: x.name || "",
+      countryId: x.countryId || "",
+      countryName: country?.name || ""
     };
+  });
+}
 
-    for (const line of lines) {
-      const [
-        level,
-        id,
-        name,
-        countryId,
-        stateId,
-        cityId,
-        lokId,
-        vidhansabhaId
-      ] = line.split(",").map(v => String(v || "").trim());
+function sheetRowsCities(masters) {
+  return (masters.cities || []).map((x) => {
+    const state = (masters.states || []).find((s) => String(s.id) === String(x.stateId));
+    const country = state
+      ? (masters.countries || []).find((c) => String(c.id) === String(state.countryId))
+      : null;
 
-      if (!masters[level]) continue;
-      if (!id || !name) continue;
+    return {
+      id: x.id || "",
+      name: x.name || "",
+      stateId: x.stateId || "",
+      stateName: state?.name || "",
+      countryId: state?.countryId || "",
+      countryName: country?.name || ""
+    };
+  });
+}
 
-      const item = { id, name };
+function sheetRowsLoksabhas(masters) {
+  return (masters.loksabhas || []).map((x) => {
+    const state = (masters.states || []).find((s) => String(s.id) === String(x.stateId));
+    const country = state
+      ? (masters.countries || []).find((c) => String(c.id) === String(state.countryId))
+      : null;
 
-      if (countryId) item.countryId = countryId;
-      if (stateId) item.stateId = stateId;
-      if (cityId) item.cityId = cityId;
-      if (lokId) item.lokId = lokId;
-      if (vidhansabhaId) item.vidhansabhaId = vidhansabhaId;
+    return {
+      id: x.id || "",
+      name: x.name || "",
+      stateId: x.stateId || "",
+      stateName: state?.name || "",
+      countryId: state?.countryId || "",
+      countryName: country?.name || ""
+    };
+  });
+}
 
-      masters[level].push(item);
-    }
+function sheetRowsVidhansabhas(masters) {
+  return (masters.vidhansabhas || []).map((x) => {
+    const lok = (masters.loksabhas || []).find((l) => String(l.id) === String(x.lokId));
+    const state = lok
+      ? (masters.states || []).find((s) => String(s.id) === String(lok.stateId))
+      : null;
+    const country = state
+      ? (masters.countries || []).find((c) => String(c.id) === String(state.countryId))
+      : null;
 
-    writeJson("masters.json", masters);
+    return {
+      id: x.id || "",
+      name: x.name || "",
+      lokId: x.lokId || "",
+      lokName: lok?.name || "",
+      stateId: lok?.stateId || "",
+      stateName: state?.name || "",
+      countryId: state?.countryId || "",
+      countryName: country?.name || ""
+    };
+  });
+}
 
-    try { fs.unlinkSync(req.file.path); } catch {}
+function sheetRowsWards(masters) {
+  return (masters.wards || []).map((x) => {
+    const city = (masters.cities || []).find((c) => String(c.id) === String(x.cityId));
+    const state = city
+      ? (masters.states || []).find((s) => String(s.id) === String(city.stateId))
+      : null;
+    const country = state
+      ? (masters.countries || []).find((c) => String(c.id) === String(state.countryId))
+      : null;
 
-    return res.json({ success: true });
+    const vid = (masters.vidhansabhas || []).find(
+      (v) => String(v.id) === String(x.vidhansabhaId)
+    );
+    const lok = vid
+      ? (masters.loksabhas || []).find((l) => String(l.id) === String(vid.lokId))
+      : null;
+
+    return {
+      id: x.id || "",
+      name: x.name || "",
+      cityId: x.cityId || "",
+      cityName: city?.name || "",
+      vidhansabhaId: x.vidhansabhaId || "",
+      vidhansabhaName: vid?.name || "",
+      lokId: vid?.lokId || "",
+      lokName: lok?.name || "",
+      stateId: city?.stateId || "",
+      stateName: state?.name || "",
+      countryId: state?.countryId || "",
+      countryName: country?.name || ""
+    };
+  });
+}
+
+function sheetRowsDesignations(masters) {
+  return (masters.designations || []).map((x) => ({
+    id: x.id || "",
+    name: x.name || ""
+  }));
+}
+
+function readSheetRows(wb, name) {
+  const sheet = wb.Sheets[name];
+  if (!sheet) return [];
+  return XLSX.utils.sheet_to_json(sheet, { defval: "" });
+}
+
+/* ================= EXPORT MASTERS WORKBOOK ================= */
+
+app.get("/admin/exportMastersWorkbook", isAdminAuth, isSuperAdmin, (req, res) => {
+  try {
+    const masters = mastersSafe(readJson("masters.json"));
+    const wb = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.json_to_sheet(sheetRowsCountries(masters)),
+      "countries"
+    );
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.json_to_sheet(sheetRowsStates(masters)),
+      "states"
+    );
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.json_to_sheet(sheetRowsCities(masters)),
+      "cities"
+    );
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.json_to_sheet(sheetRowsLoksabhas(masters)),
+      "loksabhas"
+    );
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.json_to_sheet(sheetRowsVidhansabhas(masters)),
+      "vidhansabhas"
+    );
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.json_to_sheet(sheetRowsWards(masters)),
+      "wards"
+    );
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.json_to_sheet(sheetRowsDesignations(masters)),
+      "designations"
+    );
+
+    const fileBuffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", "attachment; filename=masters-workbook.xlsx");
+
+    return res.send(fileBuffer);
   } catch (e) {
     console.error(e);
-    try {
-      if (req.file?.path) fs.unlinkSync(req.file.path);
-    } catch {}
-    return res.status(500).json({ success: false, message: "Import failed" });
+    return res.status(500).send("Failed to export masters workbook");
   }
 });
+
+/* ================= IMPORT MASTERS WORKBOOK ================= */
+
+app.post(
+  "/admin/importMastersWorkbook",
+  isAdminAuth,
+  isSuperAdmin,
+  uploadCsv.single("file"),
+  (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, message: "Excel file required" });
+      }
+
+      const ext = path.extname(req.file.originalname || "").toLowerCase();
+      if (![".xlsx", ".xls"].includes(ext)) {
+        try { fs.unlinkSync(req.file.path); } catch {}
+        return res.status(400).json({
+          success: false,
+          message: "Only .xlsx or .xls file is allowed"
+        });
+      }
+
+      const wb = XLSX.readFile(req.file.path);
+
+      const countriesRows = readSheetRows(wb, "countries");
+      const statesRows = readSheetRows(wb, "states");
+      const citiesRows = readSheetRows(wb, "cities");
+      const loksabhasRows = readSheetRows(wb, "loksabhas");
+      const vidhansabhasRows = readSheetRows(wb, "vidhansabhas");
+      const wardsRows = readSheetRows(wb, "wards");
+      const designationsRows = readSheetRows(wb, "designations");
+
+      const masters = emptyMastersStructure();
+
+      const countryMap = new Map();
+      const stateMap = new Map();
+      const cityMap = new Map();
+      const lokMap = new Map();
+      const vidMap = new Map();
+
+      for (const row of countriesRows) {
+        const id = String(row.id || "").trim() || uid("C");
+        const name = normalizeMasterName(row.name);
+        if (!name) continue;
+
+        const item = { id, name };
+        masters.countries.push(item);
+        countryMap.set(id, item);
+      }
+
+      for (const row of statesRows) {
+        const id = String(row.id || "").trim() || uid("S");
+        const name = normalizeMasterName(row.name);
+        const countryId = String(row.countryId || "").trim();
+
+        if (!name || !countryId || !countryMap.has(countryId)) continue;
+
+        const item = { id, name, countryId };
+        masters.states.push(item);
+        stateMap.set(id, item);
+      }
+
+      for (const row of citiesRows) {
+        const id = String(row.id || "").trim() || uid("CI");
+        const name = normalizeMasterName(row.name);
+        const stateId = String(row.stateId || "").trim();
+
+        if (!name || !stateId || !stateMap.has(stateId)) continue;
+
+        const item = { id, name, stateId };
+        masters.cities.push(item);
+        cityMap.set(id, item);
+      }
+
+      for (const row of loksabhasRows) {
+        const id = String(row.id || "").trim() || uid("L");
+        const name = normalizeMasterName(row.name);
+        const stateId = String(row.stateId || "").trim();
+
+        if (!name || !stateId || !stateMap.has(stateId)) continue;
+
+        const item = { id, name, stateId };
+        masters.loksabhas.push(item);
+        lokMap.set(id, item);
+      }
+
+      for (const row of vidhansabhasRows) {
+        const id = String(row.id || "").trim() || uid("V");
+        const name = normalizeMasterName(row.name);
+        const lokId = String(row.lokId || "").trim();
+
+        if (!name || !lokId || !lokMap.has(lokId)) continue;
+
+        const item = { id, name, lokId };
+        masters.vidhansabhas.push(item);
+        vidMap.set(id, item);
+      }
+
+      for (const row of wardsRows) {
+        const id = String(row.id || "").trim() || uid("W");
+        const name = normalizeMasterName(row.name);
+        const cityId = String(row.cityId || "").trim();
+        const vidhansabhaId = String(row.vidhansabhaId || "").trim();
+
+        if (!name || !cityId || !vidhansabhaId) continue;
+        if (!cityMap.has(cityId) || !vidMap.has(vidhansabhaId)) continue;
+
+        masters.wards.push({
+          id,
+          name,
+          cityId,
+          vidhansabhaId
+        });
+      }
+
+      for (const row of designationsRows) {
+        const id = String(row.id || "").trim() || uid("D");
+        const name = normalizeMasterName(row.name);
+        if (!name) continue;
+
+        masters.designations.push({ id, name });
+      }
+
+      writeJson("masters.json", masters);
+
+      try { fs.unlinkSync(req.file.path); } catch {}
+
+      return res.json({
+        success: true,
+        message: "Masters workbook imported successfully"
+      });
+    } catch (e) {
+      console.error(e);
+      try {
+        if (req.file?.path) fs.unlinkSync(req.file.path);
+      } catch {}
+      return res.status(500).json({
+        success: false,
+        message: "Workbook import failed"
+      });
+    }
+  }
+);
 app.post("/admin/addWard", isAdminAuth, isSuperAdmin, (req, res) => {
   try {
     const cityId = String(req.body.cityId || "").trim();

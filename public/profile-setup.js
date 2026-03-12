@@ -14,6 +14,19 @@ let MASTER_DATA = {
   designations: []
 };
 
+function sortByNameForDropdown(list = []) {
+  return [...list].sort((a, b) =>
+    String(a?.name || "").trim().localeCompare(
+      String(b?.name || "").trim(),
+      undefined,
+      {
+        numeric: true,
+        sensitivity: "base"
+      }
+    )
+  );
+}
+
 const countryEl = document.getElementById("country");
 const stateEl = document.getElementById("state");
 const cityEl = document.getElementById("city");
@@ -251,13 +264,27 @@ async function loadMasterData() {
     }
 
     MASTER_DATA = {
-      countries: Array.isArray(data.masters?.countries) ? data.masters.countries : [],
-      states: Array.isArray(data.masters?.states) ? data.masters.states : [],
-      cities: Array.isArray(data.masters?.cities) ? data.masters.cities : [],
-      loksabhas: Array.isArray(data.masters?.loksabhas) ? data.masters.loksabhas : [],
-      vidhansabhas: Array.isArray(data.masters?.vidhansabhas) ? data.masters.vidhansabhas : [],
-      wards: Array.isArray(data.masters?.wards) ? data.masters.wards : [],
-      designations: Array.isArray(data.masters?.designations) ? data.masters.designations : []
+      countries: sortByNameForDropdown(
+        Array.isArray(data.masters?.countries) ? data.masters.countries : []
+      ),
+      states: sortByNameForDropdown(
+        Array.isArray(data.masters?.states) ? data.masters.states : []
+      ),
+      cities: sortByNameForDropdown(
+        Array.isArray(data.masters?.cities) ? data.masters.cities : []
+      ),
+      loksabhas: sortByNameForDropdown(
+        Array.isArray(data.masters?.loksabhas) ? data.masters.loksabhas : []
+      ),
+      vidhansabhas: sortByNameForDropdown(
+        Array.isArray(data.masters?.vidhansabhas) ? data.masters.vidhansabhas : []
+      ),
+      wards: sortByNameForDropdown(
+        Array.isArray(data.masters?.wards) ? data.masters.wards : []
+      ),
+      designations: sortByNameForDropdown(
+        Array.isArray(data.masters?.designations) ? data.masters.designations : []
+      )
     };
 
     setOptions(countryEl, MASTER_DATA.countries, "Select Country");
@@ -299,7 +326,9 @@ countryEl?.addEventListener("change", () => {
 
   if (!countryId) return;
 
-  const states = MASTER_DATA.states.filter((x) => String(x.countryId) === String(countryId));
+  const states = sortByNameForDropdown(
+    MASTER_DATA.states.filter((x) => String(x.countryId) === String(countryId))
+  );
   setOptions(stateEl, states, "Select State");
   stateEl.dispatchEvent(new Event("change"));
 });
@@ -314,8 +343,12 @@ stateEl?.addEventListener("change", () => {
 
   if (!stateId) return;
 
-  const cities = MASTER_DATA.cities.filter((x) => String(x.stateId) === String(stateId));
-  const loksabhas = MASTER_DATA.loksabhas.filter((x) => String(x.stateId) === String(stateId));
+  const cities = sortByNameForDropdown(
+    MASTER_DATA.cities.filter((x) => String(x.stateId) === String(stateId))
+  );
+  const loksabhas = sortByNameForDropdown(
+    MASTER_DATA.loksabhas.filter((x) => String(x.stateId) === String(stateId))
+  );
 
   setOptions(cityEl, cities, "Select City");
   setOptions(loksabhaEl, loksabhas, "Select Lok Sabha");
@@ -332,10 +365,12 @@ function refreshWardOptions() {
 
   if (!cityId || !vidhansabhaId) return;
 
-  const wards = MASTER_DATA.wards.filter(
-    (x) =>
-      String(x.cityId) === String(cityId) &&
-      String(x.vidhansabhaId) === String(vidhansabhaId)
+  const wards = sortByNameForDropdown(
+    MASTER_DATA.wards.filter(
+      (x) =>
+        String(x.cityId) === String(cityId) &&
+        String(x.vidhansabhaId) === String(vidhansabhaId)
+    )
   );
 
   setOptions(wardEl, wards, "Select Ward (Optional)");
@@ -355,8 +390,8 @@ loksabhaEl?.addEventListener("change", () => {
 
   if (!lokId) return;
 
-  const vidhansabhas = MASTER_DATA.vidhansabhas.filter(
-    (x) => String(x.lokId) === String(lokId)
+  const vidhansabhas = sortByNameForDropdown(
+    MASTER_DATA.vidhansabhas.filter((x) => String(x.lokId) === String(lokId))
   );
 
   setOptions(vidhansabhaEl, vidhansabhas, "Select Vidhan Sabha");

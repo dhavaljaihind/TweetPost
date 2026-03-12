@@ -1,5 +1,31 @@
 let M = null;
 
+function sortByNameForDropdown(list = []) {
+  return [...list].sort((a, b) =>
+    String(a?.name || "").trim().localeCompare(
+      String(b?.name || "").trim(),
+      undefined,
+      {
+        numeric: true,
+        sensitivity: "base"
+      }
+    )
+  );
+}
+
+function sortMastersForDropdown(masters = {}) {
+  return {
+    ...masters,
+    countries: sortByNameForDropdown(masters.countries || []),
+    states: sortByNameForDropdown(masters.states || []),
+    cities: sortByNameForDropdown(masters.cities || []),
+    loksabhas: sortByNameForDropdown(masters.loksabhas || []),
+    vidhansabhas: sortByNameForDropdown(masters.vidhansabhas || []),
+    wards: sortByNameForDropdown(masters.wards || []),
+    designations: sortByNameForDropdown(masters.designations || [])
+  };
+}
+
 function getSelectedValues() {
   const ids = [
     "stateCountry",
@@ -48,7 +74,7 @@ async function loadMasters(preserved = null) {
   const data = await res.json().catch(() => ({}));
   if (!data.success) return;
 
-  M = data.masters;
+  M = sortMastersForDropdown(data.masters || {});
 
   fill("stateCountry", M.countries);
   fill("cityCountry", M.countries);
@@ -468,19 +494,17 @@ document.getElementById("uploadMastersExcelBtn")?.addEventListener("click", asyn
 
 loadMasters();
 
-/* ================= IMPORT MASTERS CSV ================= */
+/* ================= IMPORT / EXPORT MASTERS WORKBOOK ================= */
 
 const importMastersBtn = document.getElementById("importMastersBtn");
 const importMastersFile = document.getElementById("importMastersFile");
 
 if (importMastersBtn) {
-
   importMastersBtn.addEventListener("click", async () => {
-
     const file = importMastersFile?.files?.[0];
 
     if (!file) {
-      showToast("Select CSV file first");
+      showToast("Select Excel file first");
       return;
     }
 
@@ -488,8 +512,7 @@ if (importMastersBtn) {
     form.append("file", file);
 
     try {
-
-      const res = await fetch("/admin/importMastersCsv", {
+      const res = await fetch("/admin/importMastersWorkbook", {
         method: "POST",
         body: form,
         credentials: "include"
@@ -498,20 +521,15 @@ if (importMastersBtn) {
       const data = await res.json().catch(() => ({}));
 
       if (res.ok && data.success) {
-        showToast("Masters updated successfully");
-        loadMasters();
+        showToast("Masters workbook imported successfully");
+        importMastersFile.value = "";
+        await loadMasters();
       } else {
-        showToast(data.message || "Import failed");
+        showToast(data.message || "Workbook import failed");
       }
-
     } catch (err) {
-
       console.error(err);
-      showToast("Import failed");
-
+      showToast("Workbook import failed");
     }
-
   });
-
 }
-
